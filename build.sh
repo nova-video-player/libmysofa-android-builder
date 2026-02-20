@@ -4,7 +4,7 @@ source ../../AVP/android-setup-light.sh
 
 if [ ! -d "libmysofa" ]
 then
-  git clone https://github.com/hoene/libmysofa.git --depth=1 -b v1.3.3
+  git clone https://github.com/hoene/libmysofa.git --depth=1 -b v1.3.2
 fi
 
 API_LEVEL=23
@@ -33,9 +33,11 @@ do
       -DCMAKE_SHARED_LINKER_FLAGS="-Wl,-z,max-page-size=16384" \
       -DCMAKE_EXE_LINKER_FLAGS="-Wl,-z,max-page-size=16384" \
       -DCMAKE_MODULE_LINKER_FLAGS="-Wl,-z,max-page-size=16384" \
+      -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
       ../libmysofa
 	  ninja
     popd
+    mkdir -p ${DIST_DIR}/src
     cp libmysofa/src/hrtf/mysofa.h ${DIST_DIR}/src
   else
     echo "Already built for ${ABI}"
