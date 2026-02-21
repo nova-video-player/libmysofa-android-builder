@@ -2,6 +2,9 @@
 
 source ../../AVP/android-setup-light.sh
 
+LOCAL_PATH=$($READLINK -f .)
+PREBUILT_DIR=$($READLINK -f ../prebuilt/libmysofa)
+
 if [ ! -d "libmysofa" ]
 then
   git clone https://github.com/hoene/libmysofa.git --depth=1 -b v1.3.2
@@ -11,14 +14,15 @@ API_LEVEL=23
 
 for ABI in armeabi-v7a arm64-v8a x86 x86_64
 do
-  DIST_DIR="dist-${ABI}"
-  
-  if [ ! -f "${DIST_DIR}/lib/libmysofa.so" ]
+  BUILD_DIR="build-${ABI}"
+
+  if [ ! -f "${PREBUILT_DIR}/lib/${ABI}/libmysofa.so" ]
   then
-    
-    mkdir -p ${DIST_DIR}
-    
-    pushd ${DIST_DIR}
+
+    rm -rf ${BUILD_DIR}
+    mkdir -p ${BUILD_DIR}
+
+    pushd ${BUILD_DIR}
     ${CMAKE_PATH}/bin/cmake \
       -GNinja \
       -DANDROID_PLATFORM=${API_LEVEL} \
@@ -26,7 +30,7 @@ do
       -DBUILD_SHARED_LIBS=ON \
       -DANDROID_ABI=${ABI} \
       -DANDROID_NDK=${NDK_PATH} \
-      -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=$(pwd)/../${DIST_DIR}/lib \
+      -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=${PREBUILT_DIR}/lib/${ABI} \
       -DCMAKE_BUILD_TYPE=Release  \
       -DCMAKE_TOOLCHAIN_FILE=${NDK_PATH}/build/cmake/android.toolchain.cmake \
       -DANDROID_NATIVE_API_LEVEL=${API_LEVEL} \
@@ -37,8 +41,8 @@ do
       ../libmysofa
 	  ninja
     popd
-    mkdir -p ${DIST_DIR}/src
-    cp libmysofa/src/hrtf/mysofa.h ${DIST_DIR}/src
+    mkdir -p ${PREBUILT_DIR}/include
+    cp libmysofa/src/hrtf/mysofa.h ${PREBUILT_DIR}/include/
   else
     echo "Already built for ${ABI}"
   fi
