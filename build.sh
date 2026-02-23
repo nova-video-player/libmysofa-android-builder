@@ -3,6 +3,7 @@
 source ../../AVP/android-setup-light.sh
 
 LOCAL_PATH=$($READLINK -f .)
+mkdir -p ../prebuilt/libmysofa
 PREBUILT_DIR=$($READLINK -f ../prebuilt/libmysofa)
 
 # skip git clone if all prebuilt libs already exist
