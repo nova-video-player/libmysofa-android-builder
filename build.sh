@@ -12,13 +12,18 @@ if [ -f "${PREBUILT_DIR}/lib/armeabi-v7a/libmysofa.so" ] && \
    [ -f "${PREBUILT_DIR}/lib/x86/libmysofa.so" ] && \
    [ -f "${PREBUILT_DIR}/lib/x86_64/libmysofa.so" ]; then
   echo "All libmysofa prebuilt libs already exist, skipping"
+  mkdir -p ${PREBUILT_DIR}/include
+  cp libmysofa/src/hrtf/mysofa.h ${PREBUILT_DIR}/include/
   exit 0
 fi
 
 if [ ! -d "libmysofa" ]
 then
-  git clone https://github.com/hoene/libmysofa.git --depth=1 -b v1.3.2
+  git clone https://github.com/hoene/libmysofa.git --depth=1 -b v1.3.5
 fi
+
+mkdir -p ${PREBUILT_DIR}/include
+cp libmysofa/src/hrtf/mysofa.h ${PREBUILT_DIR}/include/
 
 API_LEVEL=23
 
@@ -51,8 +56,7 @@ do
       ../libmysofa
 	  ninja
     popd
-    mkdir -p ${PREBUILT_DIR}/include
-    cp libmysofa/src/hrtf/mysofa.h ${PREBUILT_DIR}/include/
+    cp ${BUILD_DIR}/src/mysofa_export.h ${PREBUILT_DIR}/include/
   else
     echo "Already built for ${ABI}"
   fi
